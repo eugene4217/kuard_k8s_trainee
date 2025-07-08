@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: meta-data-value
+spec:
+  os: { name: linux }
+  nodeSelector:
+    kubernetes.io/os: linux
+  containers:
+  - image: nginx
+    name: kuard
+    volumeMounts:
+      - mountPath: "/foo"
+        name: kuard-data
+        readOnly: true
+    ports:
+    - containerPort: 80
+      name: http
+      protocol: TCP
+  volumes:
+  - name: kuard-data
+    hostPath:
+      path: "/tmp/val"
+      type: DirectoryOrCreate

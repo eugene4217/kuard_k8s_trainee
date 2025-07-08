@@ -1,0 +1,50 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: "contour"
+spec:
+  ingressClassName: contour
+  rules:
+  - host: alpaca.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: alpaca-prod
+            port:
+              number: 8080
+  - host: bandicoot.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: bandicoot-prod
+            port:
+              number: 8080
+  - host: nginx.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: alpaca-service
+            port:
+              number: 80
+  - host: test-site.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+             name: test-site-deployment
+             port:
+               number: 80

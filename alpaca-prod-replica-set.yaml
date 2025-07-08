@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: alpaca-replica-set
+  labels:
+     app: alpaca-prod-replica-set-app
+     environment: pre-prod
+     tier: frontend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: alpaca-prod-replica-set-app
+      tier: frontend
+      environment: pre-prod
+  template:
+    metadata:
+      labels:
+        app: alpaca-prod-replica-set-app
+        environment: pre-prod
+        tier: frontend
+    spec:
+      containers:
+      - name: alpaca-container
+        image: jeezzy/test_site
+#        imagePullPolicy: Never
+        ports:
+        - name: liveness-port
+          containerPort: 80
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: liveness-port
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        startupProbe:
+          httpGet:
+            path: /
+            port: liveness-port
+          failureThreshold: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: liveness-port
+          initialDelaySeconds: 15
+          periodSeconds: 10
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: alpaca-service
+spec:
+  type: ClusterIP
+  selector:
+       app: alpaca-prod-replica-set-app
+       tier: frontend
+       environment: pre-prod
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
