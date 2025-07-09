@@ -48,3 +48,13 @@ spec:
              name: test-site-deployment
              port:
                number: 80
+#  - host: grafana.test.com
+#    http:
+#      paths:
+#      - path: /
+#        pathType: Prefix
+#        backend:
+#          service:
+#             name: grafana-interface
+#             port:
+#              number: 3000
