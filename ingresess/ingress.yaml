@@ -45,7 +45,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-             name: test-site-deployment
+             name: test-site-service
              port:
                number: 80
 #  - host: grafana.test.com
