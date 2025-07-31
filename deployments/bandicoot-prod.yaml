@@ -7,6 +7,13 @@ metadata:
     ver: "2"
     env: prod
 spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 20%
+      maxUnavailable: 1
+  minReadySeconds: 30
+  progressDeadlineSeconds: 600
   replicas: 2
   selector:
     matchLabels:
