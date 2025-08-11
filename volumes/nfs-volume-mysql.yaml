@@ -5,10 +5,10 @@ metadata:
   labels:
     volume: mysql-volume
 spec:
-  accessModes:
-  - ReadWriteMany
   capacity:
     storage: 1Gi
-  nfs:
-    server: 192.168.49.2
-    path: "/expots"
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/export"
+    type: DirectoryOrCreate

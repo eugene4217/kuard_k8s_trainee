@@ -11,15 +11,21 @@ data:
       - job_name: 'prometheus'
         static_configs:
           - targets: ['localhost:9090']
-      - job_name: 'alpaca-prod'
-        static_configs:
-          - targets: ['alpaca.example.com']
       - job_name: 'test-site'
         static_configs:
-          - targets: ['test-site.example.com']
+          - targets: ['test-site-service.default.svc.cluster.local:9113']
       - job_name: 'nginx-example'
         static_configs:
-          - targets: ['nginx.example.com']
+          - targets: ['alpaca-service.default.svc.cluster.local:9113']
       - job_name: 'bandicoot'
+        metrics_path: /metrics
         static_configs:
-          - targets: ['bandicoot.example.com']
+          - targets: ['bandicoot-service.default.svc.cluster.local:8080']
+      - job_name: 'contour-controller'
+        metrics_path: /metrics
+        static_configs:
+          - targets: ['contour.projectcontour.svc.cluster.local:8000']
+      - job_name: 'contour-envoy'
+        metrics_path: /stats/prometheus
+        static_configs:
+          - targets: ['envoy.projectcontour.svc.cluster.local:8002']

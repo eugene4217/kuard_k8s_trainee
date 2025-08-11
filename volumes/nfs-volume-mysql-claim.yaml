@@ -3,11 +3,12 @@ kind: PersistentVolumeClaim
 metadata:
   name: database
 spec:
-  accessMode:
-  - ReadWriteMany
+  accessModes:
+    - ReadWriteMany
   resources:
     requests:
       storage: 1Gi
   selector:
     matchLabels:
       volume: mysql-volume
+  storageClassName: ""
