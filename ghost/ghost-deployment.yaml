@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ghost-deployment
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 1
+  minReadySeconds: 10
+  selector:
+    matchLabels:
+      app: ghost-app
+  template:
+    metadata:
+      labels:
+        app: ghost-app
+    spec:
+      containers:
+      - image: ghost:latest
+        imagePullPolicy: IfNotPresent
+        name: ghost
+#        command:
+#        - sh
+#        - -c
+#        - cp /ghost-config/ghost-config.js /var/lib/ghost/ghost-config-mysql.js
+#          && /usr/local/bin/docker-entrypoint.sh node current/index.js
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        env:
+        - name: url
+          value: "http://localhost:2368"
+        - name: database__client
+          value: "mysql"
+        - name: database__connection__host
+          value: "mysql"
+        - name: database__connection__user
+          value: "ghost-user"
+        - name: database__connection__password
+          value: "ghost"
+        - name: database__connection__database
+          value: "ghost_db"
+        ports:
+        - containerPort: 2368
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ghost
+spec:
+  ports:
+  - port: 2368
+  selector:
+    app: ghost-app
+  type: NodePort

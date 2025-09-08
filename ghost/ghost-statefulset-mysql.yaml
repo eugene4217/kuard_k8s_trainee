@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql-ghost-statefulset
+spec:
+  serviceName: "mysql"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-ghost-app
+  template:
+    metadata:
+      labels:
+        app: mysql-ghost-app
+    spec:
+      containers:
+      - name: mysql-ghost-container
+        image: mysql:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3306
+          name: mysql-port
+#        volumeMounts:
+#        - name: my-sql-data
+#          mountPath: /var/lib/mysql
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret-ghost
+              key: MYSQL_ROOT_PASSWORD
+        - name: MYSQL_DATABASE
+          value: "ghost_db"
+        - name: MYSQL_USER
+          value: "ghost-user"
+        - name: MYSQL_PASSWORD
+          value: "ghost"
+#  volumeClaimTemplates:
+#  - metadata:
+#      name: my-sql-data
+#    spec:
+#      accessModes: [ "ReadWriteOnce" ]
+#      resources:
+#        requests:
+#          storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+spec:
+  ports:
+    - port: 3306
+      name: mysql
+  clusterIP: None
+  selector:
+    app: mysql-ghost-app

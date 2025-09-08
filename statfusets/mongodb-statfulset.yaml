@@ -11,28 +11,45 @@ spec:
     matchLabels:
       app: mongo
   serviceName: "mongo"
-  replicas: 1
+  replicas: 3
   minReadySeconds: 20
   template:
     metadata:
       labels:
         app: mongo
     spec:
+#      initContainers:
+#      - name: wait-dns
+#        image: busybox
+#        command: ['sh', '-c', 'sleep 15']
       containers:
       - name: mongodb
-        image: mongo:latest
+        image: jeezzy/mongo:latest
         imagePullPolicy: IfNotPresent
-        command: ["mongod", "-replSet", "rs0"]
-        volumeMounts:
-        - mountPath: /data/db
-          name: mondo-db-volume
+        command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
         ports:
         - containerPort: 27017
           name: peer
         volumeMounts:
-          - name: mondo-db-volume
-            mountPath: "/data/db"
+        - name: config
+          mountPath: /config
+        lifecycle:
+          postStart:
+            exec:
+               command: ["/bin/sh", "-c", "sh /config/init-replica.sh"]
       volumes:
-        - name: mondo-db-volume
-          persistentVolumeClaim:
-             claimName: mongo-db-volume-claim
+      - name: config
+        configMap:
+          name: "mongo-init-script"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+spec:
+  selector:
+    app: mongo
+  ports:
+  - port: 27017
+    name: peer
+  clusterIP: None
