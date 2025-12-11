@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: parse-server
+  namespace: default
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 30
+  selector:
+    matchLabels:
+      app: parse-server-app
+  template:
+    metadata:
+      labels:
+        app: parse-server-app
+    spec:
+      restartPolicy: Always
+      dnsPolicy: ClusterFirst
+      containers:
+      - name: parse-server-container
+        image: jeezzy/parse-server
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 1337
+          name: http
+        env:
+        - name: PARSE_SERVER_DATABASE_URI
+          value: "mongodb://mongo-0.mongo:27017,mongo-1.mongo:27017,mongo-2.mongo:27017/dev?replicaSet=rs0"
+#        - name: PARSE_SERVER_APP_ID
+#          value: my-app-id
+#        - name: PARSE_SERVER_MASTER_KEY
+#          value: my-master-key
+        command: ["npm"]
+        args: ["start", "--", "--appId", "my-app-id", "--masterKey", "my-master-key"]
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: parse-server-service
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: parse-server-app
+  ports:
+    - protocol: TCP
+      port: 1337
+      targetPort: 1337

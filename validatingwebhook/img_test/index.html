@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Добро пожаловать</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      color: #333;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+      max-width: 500px;
+      padding: 30px 40px;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 18px 30px rgba(0,0,0,0.15);
+    }
+
+    h1 {
+      font-size: 2.2em;
+      margin-bottom: 10px;
+      color: #2c3e50;
+    }
+
+    p {
+      font-size: 1.1em;
+      margin-bottom: 25px;
+      line-height: 1.6;
+    }
+
+    a.button {
+      display: inline-block;
+      padding: 12px 24px;
+      background-color: #3498db;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 1em;
+      transition: background-color 0.3s ease;
+    }
+
+    a.button:hover {
+      background-color: #2980b9;
+    }
+
+    @media (max-width: 600px) {
+      .card {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 1.6em;
+      }
+
+      p {
+        font-size: 1em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Привет, друг!</h1>
+    <p>Это красивая и адаптивная HTML-страница с вшитыми стилями. Она отлично смотрится на компьютере и на телефоне.</p>
+    <a href="#" class="button">Узнать больше</a>
+  </div>
+</body>
+</html>

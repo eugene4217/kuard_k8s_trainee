@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jupyter
+  labels:
+    app: jupyter-app
+  namespace: jupyter
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: jupyter-app
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 2
+  template:
+    metadata:
+      labels:
+        app: jupyter-app
+    spec:
+      dnsPolicy: ClusterFirst
+      containers:
+      - name: jupyter-container
+        image: jupyter/scipy-notebook:latest
+#        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+          limits:
+            memory: "512Mi"
+            cpu: "900m"

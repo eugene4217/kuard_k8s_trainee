@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo
+spec:
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: mongo
+  serviceName: "mongo"
+  replicas: 3
+  minReadySeconds: 20
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+#      initContainers:
+#      - name: wait-dns
+#        image: busybox
+#        command: ['sh', '-c', 'sleep 15']
+      containers:
+      - name: mongodb
+        image: jeezzy/mongo:latest
+        imagePullPolicy: IfNotPresent
+        command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+        ports:
+        - containerPort: 27017
+          name: peer
+        volumeMounts:
+        - name: config
+          mountPath: /config
+        lifecycle:
+          postStart:
+            exec:
+               command: ["/bin/sh", "-c", "sh /config/init-replica.sh"]
+      volumes:
+      - name: config
+        configMap:
+          name: "mongo-init-script"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+spec:
+  selector:
+    app: mongo
+  ports:
+  - port: 27017
+    name: peer
+  clusterIP: None

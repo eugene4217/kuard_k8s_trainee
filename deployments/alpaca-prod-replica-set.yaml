@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alpaca-replica-set
+  labels:
+     app: alpaca-prod-replica-set-app
+     environment: pre-prod
+     tier: frontend
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 20%
+      maxUnavailable: 1
+  minReadySeconds: 30
+  progressDeadlineSeconds: 600
+  replicas: 3
+  selector:
+    matchLabels:
+      app: alpaca-prod-replica-set-app
+      tier: frontend
+      environment: pre-prod
+  template:
+    metadata:
+      labels:
+        app: alpaca-prod-replica-set-app
+        environment: pre-prod
+        tier: frontend
+    spec:
+      containers:
+      - name: alpaca-container
+        image: jeezzy/test_site
+#        imagePullPolicy: Never
+        ports:
+        - name: liveness-port
+          containerPort: 80
+      - name: ngix-status-container
+        image: nginx/nginx-prometheus-exporter:latest
+        ports:
+        - containerPort: 9113
+        args:
+        - --nginx.scrape-uri=http://localhost/stub_status
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /metrics
+            port: 9113
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        startupProbe:
+          httpGet:
+            path: /metrics
+            port: 9113
+          failureThreshold: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /metrics
+            port: 9113
+          initialDelaySeconds: 15
+          periodSeconds: 10
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: alpaca-service
+spec:
+  type: ClusterIP
+  selector:
+       app: alpaca-prod-replica-set-app
+       tier: frontend
+       environment: pre-prod
+  ports:
+      - name: web
+        port: 80
+        targetPort: 80
+      - name: metrics
+        port: 9113
+        targetPort: 9113

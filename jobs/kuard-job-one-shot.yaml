@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: oneshot
+  namespace: default
+  labels:
+    app: kuard-job
+spec:
+  completions: 10
+  parallelism: 4
+  completionMode: Indexed
+  backoffLimitPerIndex: 1
+  maxFailedIndexes: 5
+  backoffLimit: 6
+  activeDeadlineSeconds: 300
+  template:
+    metadata:
+      labels:
+        app: kuard-job
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: busybox
+        image: busybox
+        imagePullPolicy: Always
+        command: ["sh", "-c", "echo 'Test job' && sleep 30"]

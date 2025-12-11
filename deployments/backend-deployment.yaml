@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 20%
+      maxUnavailable: 1
+  minReadySeconds: 30
+  progressDeadlineSeconds: 600
+  selector:
+    matchLabels:
+      app: backend-app
+      tier: backend
+      track: stable
+  replicas: 3
+  template:
+      metadata:
+        labels:
+          app: backend-app
+          tier: backend
+          track: stable
+      spec:
+        containers:
+          - name: back
+            image: jeezzy/front-back-app
+            ports:
+              - name: http
+                containerPort: 3000
+            resources:
+              requests:
+                memory: "256Mi"
+                cpu: "250m"
+              limits:
+                memory: "512Mi"
+                cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  selector:
+    app: backend-app
+    tier: backend
+  ports:
+  - protocol: TCP
+    port: 3000
+    targetPort: 3000

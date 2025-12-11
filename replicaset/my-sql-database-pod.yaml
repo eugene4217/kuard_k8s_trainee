@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: mysql
+  labels:
+    app: mysql
+spec:
+#  strategy:
+#    type: RollingUpdate
+#    rollingUpdate:
+#      maxSurge: 20%
+#      maxUnavaible: 1
+#    minReadySeconds: 30
+#    progressDeadliness: 600
+#    replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql-database
+        image: mysql
+        resources:
+          requests:
+            cpu: 1
+            memory: 2Gi
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysqlpass
+              key: MYSQL_ROOT_PASSWORD
+        livenessProbe:
+          tcpSocket:
+            port: 3306
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+          - name: database
+            mountPath: "/var/lib/mysql"
+      volumes:
+      - name: database
+        persistentVolumeClaim:
+          claimName: database
