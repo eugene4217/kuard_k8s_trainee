@@ -4,9 +4,15 @@ metadata:
   name: jenkins-ingress
   namespace: devops-tools
   annotations:
+<<<<<<< HEAD
 #    kubernetes.io/ingress.class: "nginx"
 spec:
   ingressClassName: nginx
+=======
+    kubernetes.io/ingress.class: "contour"
+spec:
+  ingressClassName: contour
+>>>>>>> origin/main
   rules:
   - host: jenkins-master.com
     http:

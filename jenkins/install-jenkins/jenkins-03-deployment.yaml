@@ -24,7 +24,11 @@ spec:
       serviceAccountName: jenkins-admin
       containers:
         - name: jenkins
+<<<<<<< HEAD
           image: jeezzy/jenkins:latest
+=======
+          image: jenkins/jenkins:lts
+>>>>>>> origin/main
           # OPTIONAL: check for new floating-tag LTS releases whenever the pod is restarted:
           imagePullPolicy: Always
           resources:

@@ -15,7 +15,10 @@ spec:
     - port: 8080
       targetPort: 8080
       nodePort: 32000
+<<<<<<< HEAD
       name: httpport
 #    - port: 50000
 #      targetPort: 50000
 #      name: jnlpport
+=======
+>>>>>>> origin/main
